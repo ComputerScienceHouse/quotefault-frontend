@@ -7,10 +7,25 @@ import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import SubmitReport from "./pages/SubmitReport"
 import Reports from "./pages/Reports"
+import { useOidcUser } from "@axa-fr/react-oidc"
+import {useFetchArray} from "./API/API.ts";
+import {CSHUser} from "./API/Types.ts";
+
+
+function CanQuotefault({ children }) {
+    const { oidcUser } = useOidcUser()
+
+    const userList = useFetchArray<CSHUser>("/api/users")
+    if (!userList.includes(oidcUser.preferred_username)) {
+        return <Route path="*" status={400}/>
+    }
+    return ( {children} )
+}
 
 function App() {
     return (
         <BrowserRouter>
+
             <Container className="main px-0" fluid>
                 <NavBar />
                 <ToastContainer
