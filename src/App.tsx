@@ -22,6 +22,7 @@ const CanQuotefault = () =>  {
     if (!userList.includes(currentUser)) {
         return <Route path="*" element={ <Unauthorized /> }/>
     }
+    console.log(currentUser + " no data?")
     return
 }
 
