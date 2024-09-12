@@ -10,7 +10,6 @@ import Reports from "./pages/Reports"
 import { useOidcUser } from "@axa-fr/react-oidc"
 import {useFetchArray} from "./API/API.ts";
 import {CSHUser} from "./API/Types.ts";
-import Unauthorized from "./pages/Unauthorized";
 
 
 const CanQuotefault = () =>  {
