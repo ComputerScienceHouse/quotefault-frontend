@@ -10,14 +10,15 @@ import Reports from "./pages/Reports"
 import { useOidcUser } from "@axa-fr/react-oidc"
 import {useFetchArray} from "./API/API.ts";
 import {CSHUser} from "./API/Types.ts";
+import Unauthorized from "./pages/Unauthorized";
 
 
 function CanQuotefault({ children }) {
     const { oidcUser } = useOidcUser()
 
     const userList = useFetchArray<CSHUser>("/api/users")
-    if (!userList.includes(oidcUser.preferred_username)) {
-        return <Route path="*" status={400}/>
+    if (!userList.includes(oidcUser)) {
+        return <Route path="*" element={ <Unauthorized /> }/>
     }
     return ( {children} )
 }
@@ -25,7 +26,7 @@ function CanQuotefault({ children }) {
 function App() {
     return (
         <BrowserRouter>
-
+        <CanQuotefault>
             <Container className="main px-0" fluid>
                 <NavBar />
                 <ToastContainer
@@ -59,6 +60,7 @@ function App() {
                     </Routes>
                 </Container>
             </Container>
+        </CanQuotefault>
         </BrowserRouter>
     )
 }
