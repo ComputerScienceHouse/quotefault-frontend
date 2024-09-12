@@ -24,7 +24,9 @@ const CanQuotefault = () =>  {
         return <Route path="*" element={ <Unauthorized /> }/>
     }
     console.log(currentUser + " no data?")
-    return
+    return (
+        <h1> Hello </h1>
+    )
 }
 
 function App() {
