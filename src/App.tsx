@@ -21,7 +21,7 @@ const CanQuotefault = () =>  {
     const userList = useFetchArray<CSHUser>("/api/users")
     if (!userList.includes(currentUser)) {
         console.log ("Returning this")
-        return <Route path="*" element={ <Unauthorized /> }/>
+        return <Unauthorized />
     }
     console.log(currentUser + " no data?")
     return (
