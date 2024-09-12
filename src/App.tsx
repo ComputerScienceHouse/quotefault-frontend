@@ -13,20 +13,22 @@ import {CSHUser} from "./API/Types.ts";
 import Unauthorized from "./pages/Unauthorized";
 
 
-function CanQuotefault({ children }) {
+const CanQuotefault = () =>  {
     const { oidcUser } = useOidcUser()
 
+    const currentUser = { cn: oidcUser.cn, uid: oidcUser.uid } as CSHUser
+
     const userList = useFetchArray<CSHUser>("/api/users")
-    if (!userList.includes(oidcUser)) {
+    if (!userList.includes(currentUser)) {
         return <Route path="*" element={ <Unauthorized /> }/>
     }
-    return ( {children} )
+    return
 }
 
 function App() {
     return (
         <BrowserRouter>
-        <CanQuotefault>
+        <CanQuotefault />
             <Container className="main px-0" fluid>
                 <NavBar />
                 <ToastContainer
@@ -60,7 +62,6 @@ function App() {
                     </Routes>
                 </Container>
             </Container>
-        </CanQuotefault>
         </BrowserRouter>
     )
 }
