@@ -20,7 +20,7 @@ const CanQuotefault = () =>  {
 
     const userList = useFetchArray<CSHUser>("/api/users")
     if (!userList.includes(currentUser)) {
-        return <Unauthorized />
+        return (<h1>Unauthorized</h1>)
     }
     return (
         <h1> Hello </h1>
