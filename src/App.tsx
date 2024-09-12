@@ -20,10 +20,8 @@ const CanQuotefault = () =>  {
 
     const userList = useFetchArray<CSHUser>("/api/users")
     if (!userList.includes(currentUser)) {
-        console.log ("Returning this")
         return <Unauthorized />
     }
-    console.log(currentUser + " no data?")
     return (
         <h1> Hello </h1>
     )
@@ -32,7 +30,6 @@ const CanQuotefault = () =>  {
 function App() {
     return (
         <BrowserRouter>
-
             <Container className="main px-0" fluid>
                 <CanQuotefault />
                 <NavBar />
