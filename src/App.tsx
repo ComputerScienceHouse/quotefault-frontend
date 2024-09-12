@@ -32,8 +32,9 @@ const CanQuotefault = () =>  {
 function App() {
     return (
         <BrowserRouter>
-        <CanQuotefault />
+
             <Container className="main px-0" fluid>
+                <CanQuotefault />
                 <NavBar />
                 <ToastContainer
                     theme="colored"
