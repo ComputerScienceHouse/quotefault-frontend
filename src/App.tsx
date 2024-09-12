@@ -16,7 +16,7 @@ import Unauthorized from "./pages/Unauthorized";
 const CanQuotefault = () =>  {
     const { oidcUser } = useOidcUser()
 
-    const currentUser = { cn: oidcUser.cn, uid: oidcUser.uid } as CSHUser
+    const currentUser = { cn: oidcUser.name, uid: oidcUser.preferred_username } as CSHUser
 
     const userList = useFetchArray<CSHUser>("/api/users")
     if (!userList.includes(currentUser)) {
