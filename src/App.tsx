@@ -12,7 +12,7 @@ import {useFetchArray} from "./API/API.ts";
 import {CSHUser} from "./API/Types.ts";
 
 
-const CanQuotefault = () =>  {
+function CanQuotefault() {
     const { oidcUser } = useOidcUser()
 
     const currentUser = { cn: oidcUser.name, uid: oidcUser.preferred_username } as CSHUser
