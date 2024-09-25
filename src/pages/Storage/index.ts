@@ -27,6 +27,16 @@ export const searchParams: SearchParam[] = [
         name: "Speaker",
         username: true,
     },
+    {
+        param: "sort",
+        name: "Sort",
+        username: false,
+    },
+    {
+        param: "sort_direction",
+        name: "Sort Direction",
+        username: false,
+    },
 ]
 
 export const assignParams = (dict: { [param: string]: string }) => {
