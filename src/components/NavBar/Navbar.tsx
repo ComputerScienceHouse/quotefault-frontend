@@ -65,16 +65,6 @@ const NavBar = () => {
                                 Favorites
                             </NavLink>
                         </NavItem>
-
-                        <NavItem>
-                            <NavLink href="/kevlar">
-                                <FontAwesomeIcon
-                                    icon="fa-solid fa-shield"
-                                    className="mr-1"
-                                />
-                                Toggle Kevlar (max once per day)
-                            </NavLink>
-                        </NavItem>
                         {isEboardOrRTP(oidcUser) && (
                             <>
                                 <NavItem>
