@@ -72,7 +72,7 @@ const NavBar = () => {
                                     icon={faStar}
                                     className="mr-1"
                                 />
-                                Toggle Kevlar (max once per day)
+                                Kevlar
                             </NavLink>
                         </NavItem>
                         {isEboardOrRTP(oidcUser) && (
