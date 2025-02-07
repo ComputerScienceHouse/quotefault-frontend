@@ -48,7 +48,7 @@ const Kevlar = () => {
                 <>
                     <Card>
                         <CardHeader>
-                            <CardTitle>Confirm Clear Kevlar Cache</CardTitle>
+                            <CardTitle>Clear Kevlar Cache</CardTitle>
                         </CardHeader>
                         <CardBody className="d-flex py-">
                             <ConfirmDialog
