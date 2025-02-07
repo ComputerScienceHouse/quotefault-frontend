@@ -2,9 +2,12 @@ import { toastError, useApi } from "../../API/API"
 import { toast } from "react-toastify"
 import { Card, CardBody, CardHeader, CardTitle, Container } from "reactstrap"
 import ConfirmDialog from "../../components/ConfirmDialog"
+import { useOidcUser } from "@axa-fr/react-oidc"
+import { isEboardOrRTP } from "../../util"
 
 const Kevlar = () => {
-    const { apiPut } = useApi()
+    const { apiPut, apiDelete } = useApi()
+    const { oidcUser } = useOidcUser()
 
     const submit = () => {
         apiPut("/api/kevlar")
@@ -19,20 +22,44 @@ const Kevlar = () => {
             )
     }
 
+    const clearcache = () => {
+        apiDelete("/api/kevlar")
+            .then(() => {
+                toast.success("Cache cleared!", { theme: "colored" })
+            })
+            .catch(toastError("Failed to clear cache"))
+    }
+
     return (
         <Container>
             <Card>
                 <CardHeader>
-                    <CardTitle>Confirm Toggle Kevlar</CardTitle>
+                    <CardTitle>Toggle Kevlar</CardTitle>
                 </CardHeader>
                 <CardBody className="d-flex py-">
                     <ConfirmDialog
                         onClick={submit}
                         buttonClassName="btn-danger ml-2">
-                        Confirm
+                        Toggle
                     </ConfirmDialog>
                 </CardBody>
             </Card>
+            {isEboardOrRTP(oidcUser) && (
+                <>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Confirm Clear Kevlar Cache</CardTitle>
+                        </CardHeader>
+                        <CardBody className="d-flex py-">
+                            <ConfirmDialog
+                                onClick={clearcache}
+                                buttonClassName="btn-danger ml-2">
+                                Clear Cache
+                            </ConfirmDialog>
+                        </CardBody>
+                    </Card>
+                </>
+            )}
         </Container>
     )
 }
