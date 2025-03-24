@@ -16,6 +16,7 @@ import {
     faStar,
     faUser,
     faWarning,
+    faShield,
 } from "@fortawesome/free-solid-svg-icons"
 import { useOidcUser } from "@axa-fr/react-oidc"
 import { isEboardOrRTP } from "../../util"
@@ -63,6 +64,16 @@ const NavBar = () => {
                                     className="mr-1"
                                 />
                                 Favorites
+                            </NavLink>
+                        </NavItem>
+
+                        <NavItem>
+                            <NavLink href="/kevlar">
+                                <FontAwesomeIcon
+                                    icon={faShield}
+                                    className="mr-1"
+                                />
+                                Kevlar
                             </NavLink>
                         </NavItem>
                         {isEboardOrRTP(oidcUser) && (
