@@ -35,8 +35,8 @@ const QuoteCard = (props: Props) => {
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
     const [copyStatus, setCopyStatus] = useState("")
 
-    var quoteSplit: String[] = [] // re-write the quote in a fromat for url
-    var quoteForLink: String = ""
+    let quoteSplit: string[] = [] // re-write the quote in a fromat for url
+    let quoteForLink: string = ""
     props.quote.shards.map((s, i) => {
         quoteSplit = s.body.split(" ")
         quoteForLink = quoteSplit.join("+")
