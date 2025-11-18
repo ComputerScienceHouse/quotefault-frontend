@@ -37,7 +37,7 @@ const QuoteCard = (props: Props) => {
 
     let quoteSplit: string[] = [] // re-write the quote in a fromat for url
     let quoteForLink: string = ""
-    props.quote.shards.map((s, i) => {
+    props.quote.shards.map((s) => {
         quoteSplit = s.body.split(" ")
         quoteForLink = quoteSplit.join("+")
     })
