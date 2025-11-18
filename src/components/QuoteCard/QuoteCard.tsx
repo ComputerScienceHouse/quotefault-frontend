@@ -16,12 +16,15 @@ import {
     faSquareCaretUp,
     faEllipsis,
     faStar,
+    faShare,
+    faCopy,
 } from "@fortawesome/free-solid-svg-icons"
 import { ReactNode, useEffect, useState } from "react"
 import { assignParams } from "../../pages/Storage"
 
 interface Props {
     quote: Quote
+    quoteLink: string // link to a search query for the quote
     onVoteChange?: (type: Vote) => void
     onFavorite?: (favorite: boolean) => void
     children?: ReactNode
@@ -30,12 +33,37 @@ interface Props {
 const QuoteCard = (props: Props) => {
     const [vote, setVote] = useState<Vote>(null)
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
+    const [copyStatus, setCopyStatus] = useState("")
+
+    var quoteSplit: String[] = [] // re-write the quote in a fromat for url
+    var quoteForLink: String = ""
+    props.quote.shards.map((s, i) => {
+        quoteSplit = s.body.split(" ")
+        quoteForLink = quoteSplit.join("+")
+    })
+
+    console.log("quoteForLink: " + quoteForLink)
+    props.quoteLink =
+        "https://quotefault.csh.rit.edu/storage?involved=&speaker=&submitter=&q=" +
+        quoteForLink
 
     const toggleDropdownOpen = () => setDropdownOpen(prevState => !prevState)
 
     const updateVote = (state: Vote) => {
         props.onVoteChange!(state)
         setVote(state)
+    }
+
+    const handleCopy = async () => {
+        // copy link to clipboard
+        try {
+            await navigator.clipboard.writeText(props.quoteLink)
+            setCopyStatus("Copied!")
+            setTimeout(() => setCopyStatus(String(props.quoteLink)), 2000)
+        } catch (err) {
+            setCopyStatus("Failed to copy...")
+            console.error("Failed to copy text: ", err)
+        }
     }
 
     useEffect(() => {
@@ -140,6 +168,25 @@ const QuoteCard = (props: Props) => {
                             {hiddenByContent}
                         </div>
                     </div>
+                    <Dropdown
+                        isOpen={dropdownOpen}
+                        toggle={toggleDropdownOpen}
+                        className="float-right d-flex">
+                        <DropdownToggle
+                            className="shadow-none"
+                            style={{ background: "none" }}>
+                            <FontAwesomeIcon icon={faShare} />
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            <span>{copyStatus}</span>
+                            <Button
+                                className="shadow-none"
+                                style={{ background: "none" }}
+                                onClick={handleCopy}>
+                                <FontAwesomeIcon icon={faCopy} />
+                            </Button>
+                        </DropdownMenu>
+                    </Dropdown>
 
                     {props.onFavorite && (
                         <Button
