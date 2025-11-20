@@ -24,7 +24,6 @@ import { assignParams } from "../../pages/Storage"
 
 interface Props {
     quote: Quote
-    quoteLink: string // link to a search query for the quote
     onVoteChange?: (type: Vote) => void
     onFavorite?: (favorite: boolean) => void
     children?: ReactNode
@@ -35,15 +34,16 @@ const QuoteCard = (props: Props) => {
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
     const [copyStatus, setCopyStatus] = useState("")
 
-    let quoteSplit: string[] = [] // re-write the quote in a fromat for url
+    let quoteSplit: string[] = [] // re-write the quote in a format for url
     let quoteForLink: string = ""
+    let quoteLink: string = ""
     props.quote.shards.map((s) => {
         quoteSplit = s.body.split(" ")
         quoteForLink = quoteSplit.join("+")
     })
 
     console.log("quoteForLink: " + quoteForLink)
-    props.quoteLink =
+    quoteLink =
         "https://quotefault.csh.rit.edu/storage?involved=&speaker=&submitter=&q=" +
         quoteForLink
 
@@ -57,9 +57,9 @@ const QuoteCard = (props: Props) => {
     const handleCopy = async () => {
         // copy link to clipboard
         try {
-            await navigator.clipboard.writeText(props.quoteLink)
+            await navigator.clipboard.writeText(quoteLink)
             setCopyStatus("Copied!")
-            setTimeout(() => setCopyStatus(String(props.quoteLink)), 2000)
+            setTimeout(() => setCopyStatus(String(quoteLink)), 2000)
         } catch (err) {
             setCopyStatus("Failed to copy...")
             console.error("Failed to copy text: ", err)
