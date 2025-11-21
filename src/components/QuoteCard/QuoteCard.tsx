@@ -185,7 +185,7 @@ const QuoteCard = (props: Props) => {
                             <p style={{padding: "0em 2em", marginBottom: "0em", paddingTop: "0.6em", textAlign: "left" }}>{copyStatus}</p>
                             <Button
                                 className="shadow-none"
-                                style={{ background: "none", float: "right", textAlign: "right"}}
+                                style={{ background: "none", float: "right", textAlign: "right", paddingRight: "1.35em"}}
                                 onClick={handleCopy}>
                                 <FontAwesomeIcon icon={faCopy} />
                             </Button>
