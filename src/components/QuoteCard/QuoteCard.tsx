@@ -32,6 +32,7 @@ interface Props {
 const QuoteCard = (props: Props) => {
     const [vote, setVote] = useState<Vote>(null)
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
+    const [dropdownShareOpen, setDropdownShareOpen] = useState<boolean>(false)
     const [copyStatus, setCopyStatus] = useState("")
 
     let quoteSplit: string[] = [] // re-write the quote in a format for url
@@ -44,10 +45,13 @@ const QuoteCard = (props: Props) => {
 
     console.log("quoteForLink: " + quoteForLink)
     quoteLink =
-        "https://quotefault.csh.rit.edu/storage?involved=&speaker=&submitter=&q=" +
+        `${window.location.protocol}//${window.location.hostname}${
+        window.location.port ? `:${window.location.port}` : ""
+    }/storage?involved=&speaker=&submitter=&q=` +
         quoteForLink
 
     const toggleDropdownOpen = () => setDropdownOpen(prevState => !prevState)
+    const toggleDropdownShareOpen = () => setDropdownShareOpen(prevState => !prevState)
 
     const updateVote = (state: Vote) => {
         props.onVoteChange!(state)
@@ -169,8 +173,8 @@ const QuoteCard = (props: Props) => {
                         </div>
                     </div>
                     <Dropdown
-                        isOpen={dropdownOpen}
-                        toggle={toggleDropdownOpen}
+                        isOpen={dropdownShareOpen}
+                        toggle={toggleDropdownShareOpen}
                         className="float-right d-flex">
                         <DropdownToggle
                             className="shadow-none"
