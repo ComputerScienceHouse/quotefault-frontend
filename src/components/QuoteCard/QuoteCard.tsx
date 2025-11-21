@@ -32,7 +32,7 @@ interface Props {
 const QuoteCard = (props: Props) => {
     const [vote, setVote] = useState<Vote>(null)
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
-    const [dropdownShareOpen, setDropdownShareOpen] = useState<boolean>(false)
+    const [shareDropdownOpen, setShareDropdownOpen] = useState<boolean>(false)
     const [copyStatus, setCopyStatus] = useState("")
 
     let quoteSplit: string[] = [] // re-write the quote in a format for url
@@ -43,7 +43,7 @@ const QuoteCard = (props: Props) => {
         quoteForLink = quoteSplit.join("+")
     })
 
-    console.log("quoteForLink: " + quoteForLink)
+    // console.log("quoteForLink: " + quoteForLink)
     quoteLink =
         `${window.location.protocol}//${window.location.hostname}${
         window.location.port ? `:${window.location.port}` : ""
@@ -51,7 +51,7 @@ const QuoteCard = (props: Props) => {
         quoteForLink
 
     const toggleDropdownOpen = () => setDropdownOpen(prevState => !prevState)
-    const toggleDropdownShareOpen = () => setDropdownShareOpen(prevState => !prevState)
+    const toggleShareDropdownOpen = () => {setShareDropdownOpen(prevState => !prevState); setCopyStatus(String(quoteLink));}
 
     const updateVote = (state: Vote) => {
         props.onVoteChange!(state)
@@ -173,8 +173,8 @@ const QuoteCard = (props: Props) => {
                         </div>
                     </div>
                     <Dropdown
-                        isOpen={dropdownShareOpen}
-                        toggle={toggleDropdownShareOpen}
+                        isOpen={shareDropdownOpen}
+                        toggle={toggleShareDropdownOpen}
                         className="float-right d-flex">
                         <DropdownToggle
                             className="shadow-none"
@@ -182,10 +182,10 @@ const QuoteCard = (props: Props) => {
                             <FontAwesomeIcon icon={faShare} />
                         </DropdownToggle>
                         <DropdownMenu>
-                            <span>{copyStatus}</span>
+                            <p style={{padding: "0em 2em", marginBottom: "0em", paddingTop: "0.6em", textAlign: "left" }}>{copyStatus}</p>
                             <Button
                                 className="shadow-none"
-                                style={{ background: "none" }}
+                                style={{ background: "none", float: "right", textAlign: "right"}}
                                 onClick={handleCopy}>
                                 <FontAwesomeIcon icon={faCopy} />
                             </Button>
