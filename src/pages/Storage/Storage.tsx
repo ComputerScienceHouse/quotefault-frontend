@@ -100,26 +100,21 @@ const Storage = (props: Props) => {
                 ...searchParams
                     .map(s => getVar(s.param))
                     .reduce((a, b) => ({ ...a, ...b })),
-                ...storageTypeParams,}).then(q => {
-                    if (q.length < pageSize) {
-                        setIsMore(false)
-                    }
-                    return q
-                })
+                ...storageTypeParams,
+            })
                 .then(q => {
                     if (q.length < pageSize) {
                         setIsMore(false)
                     }
                     return q
                 })
-                .then(qs =>
-                    setQuotes(quotes => ({
-                        ...qs
-                            .map(q => ({ [q.id]: q }))
-                            .reduce((a, b) => ({ ...a, ...b }), {}),
-                        ...quotes,
-                    }))
-                )
+                .then(qs =>{
+                    const quoteArray: Quote[] = Array.isArray(qs) ? qs : [qs]; // turn it into an array if it is not
+                    setQuotes((quote: QuoteDict) => {
+                        quote = quoteArray.map(q => ({ [q.id]: q })).reduce((a, b) => ({ ...a, ...b}), {});
+                        return quote;
+                    })
+        })
                 .catch(toastError("Error fetching Quote"))   
         } else{
             apiGet<Quote[]>("/api/quotes", {
@@ -145,7 +140,7 @@ const Storage = (props: Props) => {
                             .map(q => ({ [q.id]: q }))
                             .reduce((a, b) => ({ ...a, ...b }), {}),
                         ...quotes,
-                    }))
+                    })) 
                 )
                 .catch(toastError("Error fetching Quotes"))   
         }

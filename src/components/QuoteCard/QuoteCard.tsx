@@ -43,13 +43,21 @@ const QuoteCard = (props: Props) => {
         quoteForLink = quoteSplit.join("+")
     })
 
-    // console.log("quoteForLink: " + quoteForLink)
+    // // quoteLink for getting a quote by its search query
+    // quoteLink =
+    //     `${window.location.protocol}//${window.location.hostname}${
+    //     window.location.port ? `:${window.location.port}` : ""
+    // }/storage?involved=&speaker=&submitter=&q=` +
+    //     quoteForLink
+
+    // quoteLink for getting a quote by its id an putting it on its own page
     quoteLink =
         `${window.location.protocol}//${window.location.hostname}${
         window.location.port ? `:${window.location.port}` : ""
-    }/storage?involved=&speaker=&submitter=&q=` +
-        quoteForLink
+    }/quote/` +
+        props.quote.id
 
+    
     const toggleDropdownOpen = () => setDropdownOpen(prevState => !prevState)
     const toggleShareDropdownOpen = () => {setShareDropdownOpen(prevState => !prevState); setCopyStatus(String(quoteLink));}
 
