@@ -90,32 +90,65 @@ const Storage = (props: Props) => {
             }
         })()
 
-        apiGet<Quote[]>("/api/quotes", {
-            lt: getQuotes(quotes).reduce(
-                (a, b) => (a.id < b.id && a.id != 0 ? a : b),
-                { id: 0 }
-            ).id,
-            limit: pageSize,
-            ...searchParams
-                .map(s => getVar(s.param))
-                .reduce((a, b) => ({ ...a, ...b })),
-            ...storageTypeParams,
-        })
-            .then(q => {
-                if (q.length < pageSize) {
-                    setIsMore(false)
-                }
-                return q
+        if(props.storageType == "SINGLE"){
+            apiGet<Quote[]>("/api/quote/" + storageTypeParams.id, { 
+                lt: getQuotes(quotes).reduce(
+                    (a, b) => (a.id < b.id && a.id != 0 ? a : b),
+                    { id: 0 }
+                ).id,
+                limit: pageSize,
+                ...searchParams
+                    .map(s => getVar(s.param))
+                    .reduce((a, b) => ({ ...a, ...b })),
+                ...storageTypeParams,}).then(q => {
+                    if (q.length < pageSize) {
+                        setIsMore(false)
+                    }
+                    return q
+                })
+                .then(q => {
+                    if (q.length < pageSize) {
+                        setIsMore(false)
+                    }
+                    return q
+                })
+                .then(qs =>
+                    setQuotes(quotes => ({
+                        ...qs
+                            .map(q => ({ [q.id]: q }))
+                            .reduce((a, b) => ({ ...a, ...b }), {}),
+                        ...quotes,
+                    }))
+                )
+                .catch(toastError("Error fetching Quote"))   
+        } else{
+            apiGet<Quote[]>("/api/quotes", {
+                lt: getQuotes(quotes).reduce(
+                    (a, b) => (a.id < b.id && a.id != 0 ? a : b),
+                    { id: 0 }
+                ).id,                    
+                limit: pageSize,
+                ...searchParams
+                    .map(s => getVar(s.param))
+                    .reduce((a, b) => ({ ...a, ...b })),
+                ...storageTypeParams,
             })
-            .then(qs =>
-                setQuotes(quotes => ({
-                    ...qs
-                        .map(q => ({ [q.id]: q }))
-                        .reduce((a, b) => ({ ...a, ...b }), {}),
-                    ...quotes,
-                }))
-            )
-            .catch(toastError("Error fetching Quotes"))
+                .then(q => {
+                    if (q.length < pageSize) {
+                        setIsMore(false)
+                    }
+                    return q
+                })
+                .then(qs =>
+                    setQuotes(quotes => ({
+                        ...qs
+                            .map(q => ({ [q.id]: q }))
+                            .reduce((a, b) => ({ ...a, ...b }), {}),
+                        ...quotes,
+                    }))
+                )
+                .catch(toastError("Error fetching Quotes"))   
+        }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

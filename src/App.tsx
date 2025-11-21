@@ -41,7 +41,7 @@ function App() {
                             element={<Storage storageType="FAVORITES" />}
                         />
                         <Route  
-                            path="/quote/:id"
+                            path="/quote/:quoteId"
                             element={<Storage storageType="SINGLE" />}
                         />
                         <Route path="/kevlar" element={<Kevlar />} />
