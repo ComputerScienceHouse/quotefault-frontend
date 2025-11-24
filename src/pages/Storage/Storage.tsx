@@ -91,57 +91,49 @@ const Storage = (props: Props) => {
         })()
 
         const run = async () => { // run as an async function
-            if(props.storageType == "SINGLE"){
-                try {
-                    const q = await apiGet<Quote[]>("/api/quote/" + storageTypeParams.id, { 
-                        lt: getQuotes(quotes).reduce(
-                            (a, b) => (a.id < b.id && a.id != 0 ? a : b),
-                            { id: 0 }
-                        ).id,
-                        limit: pageSize,
-                        ...searchParams
-                            .map(s => getVar(s.param))
-                            .reduce((a, b) => ({ ...a, ...b })),
-                        ...storageTypeParams,
-                    })
+            try {
+                const endpoint = props.storageType == "SINGLE"
+                    ? "/api/quote/" + storageTypeParams.id
+                    : "/api/quotes"
+
+                const minId = getQuotes(quotes).reduce(
+                    (a, b) => (a.id < b.id && a.id != 0 ? a : b),
+                    { id: 0 }
+                ).id
+
+                const mergedSearchParams = searchParams
+                    .map(s => getVar(s.param))
+                    .reduce((a, b) => ({ ...a, ...b }), {})
+
+                const q = await apiGet<Quote | Quote[]>(endpoint, {
+                    lt: minId,
+                    limit: pageSize,
+                    ...mergedSearchParams,
+                    ...storageTypeParams,
+                })
+
+                if (props.storageType == "SINGLE") {
+                    const quoteArray = [q as Quote]
                     setIsMore(false)
-                    const quoteArray: Quote[] = Array.isArray(q) ? q : [q]; // turn it into an array if it is not
-                    setQuotes((quote: QuoteDict) => {
-                        quote = quoteArray.map(q => ({ [q.id]: q })).reduce((a, b) => ({ ...a, ...b}), {});
-                        return quote;
-                    })
-                }
-                catch (err) {
-                    (toastError("Error fetching Quote " + err))  
-                } 
-            } 
-            else {
-                try {
-                    const q = await apiGet<Quote[]>("/api/quotes", {
-                        lt: getQuotes(quotes).reduce(
-                            (a, b) => (a.id < b.id && a.id != 0 ? a : b),
-                            { id: 0 }
-                        ).id,                    
-                        limit: pageSize,
-                        ...searchParams
-                            .map(s => getVar(s.param))
-                            .reduce((a, b) => ({ ...a, ...b })),
-                        ...storageTypeParams,
-                    })
-                    if (q.length < pageSize) {
-                        setIsMore(false)
-                    }
+                    setQuotes(quoteArray)
+                } else {
+                    const quoteArray = q as Quote[]
+                    if (quoteArray.length < pageSize) setIsMore(false)
+
+                    const mergedQuotes = quoteArray
+                        .map(qs => ({ [qs.id]: qs }))
+                        .reduce((a, b) => ({ ...a, ...b }), {})
+
                     setQuotes(quotes => ({
-                        ...q
-                            .map(qs => ({ [qs.id]: qs }))
-                            .reduce((a, b) => ({ ...a, ...b }), {}),
+                        ...mergedQuotes,
                         ...quotes,
-                    })) 
-                }
-                catch (err) {
-                    toastError("Error fetching Quotes " + err)
+                    }))
                 }
             }
+            catch (err) {
+                toastError("Error fetching Quotes " + err)
+            }
+
         }
         run();
     }
