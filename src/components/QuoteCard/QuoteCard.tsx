@@ -17,7 +17,6 @@ import {
     faEllipsis,
     faStar,
     faShare,
-    faCopy,
 } from "@fortawesome/free-solid-svg-icons"
 import { ReactNode, useEffect, useState } from "react"
 import { assignParams } from "../../pages/Storage"
