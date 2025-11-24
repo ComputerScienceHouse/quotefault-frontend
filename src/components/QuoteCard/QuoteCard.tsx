@@ -35,31 +35,12 @@ const QuoteCard = (props: Props) => {
     const [shareDropdownOpen, setShareDropdownOpen] = useState<boolean>(false)
     const [copyStatus, setCopyStatus] = useState("")
 
-    let quoteSplit: string[] = [] // re-write the quote in a format for url
-    let quoteForLink: string = ""
-    let quoteLink: string = ""
-    props.quote.shards.map((s) => {
-        quoteSplit = s.body.split(" ")
-        quoteForLink = quoteSplit.join("+")
-    })
+    let quoteLink: string = `${window.location.origin}/quote/`+ props.quote.id
 
-    // // quoteLink for getting a quote by its search query
-    // quoteLink =
-    //     `${window.location.protocol}//${window.location.hostname}${
-    //     window.location.port ? `:${window.location.port}` : ""
-    // }/storage?involved=&speaker=&submitter=&q=` +
-    //     quoteForLink
-
-    // quoteLink for getting a quote by its id an putting it on its own page
-    quoteLink =
-        `${window.location.protocol}//${window.location.hostname}${
-        window.location.port ? `:${window.location.port}` : ""
-    }/quote/` +
-        props.quote.id
-
-    
     const toggleDropdownOpen = () => setDropdownOpen(prevState => !prevState)
-    const toggleShareDropdownOpen = () => {setShareDropdownOpen(prevState => !prevState); setCopyStatus(String(quoteLink));}
+    const toggleShareDropdownOpen = () => {
+        setShareDropdownOpen(prevState => !prevState); 
+    }
 
     const updateVote = (state: Vote) => {
         props.onVoteChange!(state)
@@ -70,8 +51,8 @@ const QuoteCard = (props: Props) => {
         // copy link to clipboard
         try {
             await navigator.clipboard.writeText(quoteLink)
-            setCopyStatus("Copied!")
-            setTimeout(() => setCopyStatus(String(quoteLink)), 2000)
+            setCopyStatus("Copied Link!")
+            setTimeout(() => setShareDropdownOpen(false), 1000)
         } catch (err) {
             setCopyStatus("Failed to copy...")
             console.error("Failed to copy text: ", err)
@@ -186,20 +167,15 @@ const QuoteCard = (props: Props) => {
                         className="float-right d-flex">
                         <DropdownToggle
                             className="shadow-none"
-                            style={{ background: "none" }}>
+                            style={{ background: "none"}}
+                            onClick={handleCopy}>
                             <FontAwesomeIcon icon={faShare} />
                         </DropdownToggle>
                         <DropdownMenu>
-                            <p style={{padding: "0em 2em", marginBottom: "0em", paddingTop: "0.6em", textAlign: "left" }}>{copyStatus}</p>
-                            <Button
-                                className="shadow-none"
-                                style={{ background: "none", float: "right", textAlign: "right", paddingRight: "1.35em"}}
-                                onClick={handleCopy}>
-                                <FontAwesomeIcon icon={faCopy} />
-                            </Button>
+                            <p style={{margin: "0em", padding: "0.2em", textAlign: "center" }}>{copyStatus}</p>
                         </DropdownMenu>
                     </Dropdown>
-
+                    
                     {props.onFavorite && (
                         <Button
                             className="shadow-none"
