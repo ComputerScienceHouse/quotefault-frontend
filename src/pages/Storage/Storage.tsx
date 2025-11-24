@@ -8,7 +8,7 @@ import QuoteCard from "../../components/QuoteCard/QuoteCard"
 import { useOidcUser } from "@axa-fr/react-oidc"
 import ConfirmModal from "../../components/ConfirmModal"
 import { isEboardOrRTP } from "../../util"
-import { useSearchParams } from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
 import Search from "./Search"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
@@ -23,7 +23,7 @@ import { Badge, Button, Container, DropdownItem, Input } from "reactstrap"
 const pageSize = parseInt(process.env.QUOTEFAULT_STORAGE_PAGE_SIZE || "10")
 
 interface Props {
-    storageType: "STORAGE" | "HIDDEN" | "PERSONAL" | "FAVORITES"
+    storageType: "STORAGE" | "HIDDEN" | "PERSONAL" | "FAVORITES" | "SINGLE"
 }
 
 interface ModalProps {
@@ -43,6 +43,8 @@ const Storage = (props: Props) => {
 
     const [queryParams] = useSearchParams()
 
+    const { quoteId } = useParams()
+
     const getParam = (key: string): string | null =>
         queryParams.has(key) ? queryParams.get(key) || null : null
 
@@ -59,6 +61,7 @@ const Storage = (props: Props) => {
     const [modalState, setModalState] = useState<ModalProps | null>(null)
 
     const [reportText, setReportText] = useState<string>("")
+
 
     if (props.storageType === "PERSONAL" && getParam("involved")) {
         window.location.assign(`/storage?involved=${getParam("involved")}`)
@@ -82,35 +85,57 @@ const Storage = (props: Props) => {
                     return { involved: oidcUser.preferred_username }
                 case "FAVORITES":
                     return { favorited: true }
+                case "SINGLE":
+                    return { hidden: false, id: quoteId }
             }
         })()
 
-        apiGet<Quote[]>("/api/quotes", {
-            lt: getQuotes(quotes).reduce(
-                (a, b) => (a.id < b.id && a.id != 0 ? a : b),
-                { id: 0 }
-            ).id,
-            limit: pageSize,
-            ...searchParams
-                .map(s => getVar(s.param))
-                .reduce((a, b) => ({ ...a, ...b })),
-            ...storageTypeParams,
-        })
-            .then(q => {
-                if (q.length < pageSize) {
+        const run = async () => { // run as an async function
+            try {
+                const endpoint = props.storageType == "SINGLE"
+                    ? "/api/quote/" + storageTypeParams.id
+                    : "/api/quotes"
+
+                const minId = getQuotes(quotes).reduce(
+                    (a, b) => (a.id < b.id && a.id != 0 ? a : b),
+                    { id: 0 }
+                ).id
+
+                const mergedSearchParams = searchParams
+                    .map(s => getVar(s.param))
+                    .reduce((a, b) => ({ ...a, ...b }), {})
+
+                const q = await apiGet<Quote | Quote[]>(endpoint, {
+                    lt: minId,
+                    limit: pageSize,
+                    ...mergedSearchParams,
+                    ...storageTypeParams,
+                })
+
+                if (props.storageType == "SINGLE") {
+                    const quoteArray = [q as Quote]
                     setIsMore(false)
+                    setQuotes(quoteArray)
+                } else {
+                    const quoteArray = q as Quote[]
+                    if (quoteArray.length < pageSize) setIsMore(false)
+
+                    const mergedQuotes = quoteArray
+                        .map(qs => ({ [qs.id]: qs }))
+                        .reduce((a, b) => ({ ...a, ...b }), {})
+
+                    setQuotes(quotes => ({
+                        ...mergedQuotes,
+                        ...quotes,
+                    }))
                 }
-                return q
-            })
-            .then(qs =>
-                setQuotes(quotes => ({
-                    ...qs
-                        .map(q => ({ [q.id]: q }))
-                        .reduce((a, b) => ({ ...a, ...b }), {}),
-                    ...quotes,
-                }))
-            )
-            .catch(toastError("Error fetching Quotes"))
+            }
+            catch (err) {
+                toastError("Error fetching Quotes " + err)
+            }
+
+        }
+        run();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
