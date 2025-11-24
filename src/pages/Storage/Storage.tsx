@@ -90,60 +90,60 @@ const Storage = (props: Props) => {
             }
         })()
 
-        if(props.storageType == "SINGLE"){
-            apiGet<Quote[]>("/api/quote/" + storageTypeParams.id, { 
-                lt: getQuotes(quotes).reduce(
-                    (a, b) => (a.id < b.id && a.id != 0 ? a : b),
-                    { id: 0 }
-                ).id,
-                limit: pageSize,
-                ...searchParams
-                    .map(s => getVar(s.param))
-                    .reduce((a, b) => ({ ...a, ...b })),
-                ...storageTypeParams,
-            })
-                .then(q => {
-                    if (q.length < pageSize) {
-                        setIsMore(false)
-                    }
-                    return q
-                })
-                .then(qs =>{
-                    const quoteArray: Quote[] = Array.isArray(qs) ? qs : [qs]; // turn it into an array if it is not
+        const run = async () => { // run as an async function
+            if(props.storageType == "SINGLE"){
+                try {
+                    const q = await apiGet<Quote[]>("/api/quote/" + storageTypeParams.id, { 
+                        lt: getQuotes(quotes).reduce(
+                            (a, b) => (a.id < b.id && a.id != 0 ? a : b),
+                            { id: 0 }
+                        ).id,
+                        limit: pageSize,
+                        ...searchParams
+                            .map(s => getVar(s.param))
+                            .reduce((a, b) => ({ ...a, ...b })),
+                        ...storageTypeParams,
+                    })
+                    setIsMore(false)
+                    const quoteArray: Quote[] = Array.isArray(q) ? q : [q]; // turn it into an array if it is not
                     setQuotes((quote: QuoteDict) => {
                         quote = quoteArray.map(q => ({ [q.id]: q })).reduce((a, b) => ({ ...a, ...b}), {});
                         return quote;
                     })
-        })
-                .catch(toastError("Error fetching Quote"))   
-        } else{
-            apiGet<Quote[]>("/api/quotes", {
-                lt: getQuotes(quotes).reduce(
-                    (a, b) => (a.id < b.id && a.id != 0 ? a : b),
-                    { id: 0 }
-                ).id,                    
-                limit: pageSize,
-                ...searchParams
-                    .map(s => getVar(s.param))
-                    .reduce((a, b) => ({ ...a, ...b })),
-                ...storageTypeParams,
-            })
-                .then(q => {
+                }
+                catch (err) {
+                    (toastError("Error fetching Quote " + err))  
+                } 
+            } 
+            else {
+                try {
+                    const q = await apiGet<Quote[]>("/api/quotes", {
+                        lt: getQuotes(quotes).reduce(
+                            (a, b) => (a.id < b.id && a.id != 0 ? a : b),
+                            { id: 0 }
+                        ).id,                    
+                        limit: pageSize,
+                        ...searchParams
+                            .map(s => getVar(s.param))
+                            .reduce((a, b) => ({ ...a, ...b })),
+                        ...storageTypeParams,
+                    })
                     if (q.length < pageSize) {
                         setIsMore(false)
                     }
-                    return q
-                })
-                .then(qs =>
                     setQuotes(quotes => ({
-                        ...qs
-                            .map(q => ({ [q.id]: q }))
+                        ...q
+                            .map(qs => ({ [qs.id]: qs }))
                             .reduce((a, b) => ({ ...a, ...b }), {}),
                         ...quotes,
                     })) 
-                )
-                .catch(toastError("Error fetching Quotes"))   
+                }
+                catch (err) {
+                    toastError("Error fetching Quotes " + err)
+                }
+            }
         }
+        run();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
