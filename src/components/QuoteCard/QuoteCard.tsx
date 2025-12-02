@@ -16,6 +16,7 @@ import {
     faSquareCaretUp,
     faEllipsis,
     faStar,
+    faShare,
 } from "@fortawesome/free-solid-svg-icons"
 import { ReactNode, useEffect, useState } from "react"
 import { assignParams } from "../../pages/Storage"
@@ -30,12 +31,31 @@ interface Props {
 const QuoteCard = (props: Props) => {
     const [vote, setVote] = useState<Vote>(null)
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false)
+    const [shareDropdownOpen, setShareDropdownOpen] = useState<boolean>(false)
+    const [copyStatus, setCopyStatus] = useState("")
+
+    let quoteLink: string = `${window.location.origin}/quote/`+ props.quote.id
 
     const toggleDropdownOpen = () => setDropdownOpen(prevState => !prevState)
+    const toggleShareDropdownOpen = () => {
+        setShareDropdownOpen(prevState => !prevState); 
+    }
 
     const updateVote = (state: Vote) => {
         props.onVoteChange!(state)
         setVote(state)
+    }
+
+    const handleCopy = async () => {
+        // copy link to clipboard
+        try {
+            await navigator.clipboard.writeText(quoteLink)
+            setCopyStatus("Copied Link!")
+            setTimeout(() => setShareDropdownOpen(false), 1000)
+        } catch (err) {
+            setCopyStatus("Failed to copy...")
+            console.error("Failed to copy text: ", err)
+        }
     }
 
     useEffect(() => {
@@ -140,7 +160,21 @@ const QuoteCard = (props: Props) => {
                             {hiddenByContent}
                         </div>
                     </div>
-
+                    <Dropdown
+                        isOpen={shareDropdownOpen}
+                        toggle={toggleShareDropdownOpen}
+                        className="float-right d-flex">
+                        <DropdownToggle
+                            className="shadow-none"
+                            style={{ background: "none"}}
+                            onClick={handleCopy}>
+                            <FontAwesomeIcon icon={faShare} />
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            <p style={{margin: "0em", padding: "0.2em", textAlign: "center" }}>{copyStatus}</p>
+                        </DropdownMenu>
+                    </Dropdown>
+                    
                     {props.onFavorite && (
                         <Button
                             className="shadow-none"
